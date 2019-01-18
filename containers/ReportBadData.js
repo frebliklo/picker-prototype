@@ -1,7 +1,5 @@
 import React from 'react'
 import {
-  Animated,
-  Modal,
   Picker,
   Platform,
   SafeAreaView,
@@ -10,6 +8,8 @@ import {
   TouchableHighlight,
   View
 } from 'react-native'
+
+import PickerModal from '../components/PickerModal'
 
 const dataItems = [
   { value: 'fuel', label: 'Fuel' },
@@ -30,7 +30,6 @@ class ReportBadData extends React.Component {
 
   state = {
     modalVisible: false,
-    iosPickerY: new Animated.Value(0),
     pickerTouched: false,
     pickerText: 'Choose data type',
     dataItem: 'fuel',
@@ -39,48 +38,34 @@ class ReportBadData extends React.Component {
   }
 
   onValueChange = (itemValue, itemPosition) => {
-    this.setState({ dataItem: itemValue })
-  }
-
-  onValueChangeIos = (itemValue, itemPosition) => {
     this.setState({ 
       pickerText: dataItems[itemPosition].label,
       dataItem: itemValue,
     })
   }
 
-  onOkButtonPress = () => {
+  onPickerConfirm = () => {
     const pickedElement = dataItems.find(item => item.value === this.state.dataItem)
     const pickerText = pickedElement.label
-
-    Animated.timing(this.state.iosPickerY, {
-      toValue: 0,
-      duration: 175
-    }).start(() => {
-      this.setState({ 
-        modalVisible: false,
-        pickerTouched: true,
-        pickerText,
-      })
+  
+    this.setState({ 
+      modalVisible: false,
+      pickerTouched: true,
+      pickerText,
     })
   }
 
-  onCancelButtonPress = () => {
-    Animated.timing(this.state.iosPickerY, {
-      toValue: 0,
-      duration: 175
-    }).start(() => {
-      if(!this.state.pickerTouched) {
-        this.setState({ 
-          pickerText: 'Choose data type',
-          modalVisible: false
-        })
-      } else {
-        this.setState({ 
-          modalVisible: false
-        })
-      }
-    })
+  onPickerDismiss = () => {
+    if(!this.state.pickerTouched) {
+      this.setState({ 
+        pickerText: 'Choose data type',
+        modalVisible: false
+      })
+    } else {
+      this.setState({ 
+        modalVisible: false
+      })
+    }
     
   }
 
@@ -95,11 +80,6 @@ class ReportBadData extends React.Component {
      if(!this.state.pickerTouched) {
        this.setState({ pickerText })
      }
-
-    Animated.timing(this.state.iosPickerY, {
-      toValue: 1,
-      duration: 300
-    }).start()
   }
 
   renderAndroidPicker = () => (
@@ -112,54 +92,20 @@ class ReportBadData extends React.Component {
       {dataItems.map(item => <Picker.Item key={item.value} value={item.value} label={item.label} />)}
     </Picker>
   )
-
-  renderIosPicker = () => {
-    const translateY = this.state.iosPickerY.interpolate({
-      inputRange: [0, 1],
-      outputRange: [500, 0]
-    })
-
-    return (
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={this.state.modalVisible}
-        onShow={this.showIosPicker}
-      >
-        <View style={{ ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,.35)' }} />
-        <View style={{ flex: 1 }} />
-        <Animated.View style={[styles.iosShadow, styles.pickerIos, { transform: [{ translateY }] }]}>
-          <View style={styles.buttonRow}>
-            <TouchableHighlight
-              style={styles.buttonContainer}
-              underlayColor="rgba(233,16,59,.33)"
-              onPress={this.onCancelButtonPress}
-            >
-              <Text style={styles.cancelButton}>Cancel</Text>
-            </TouchableHighlight>
-            <TouchableHighlight
-              style={styles.buttonContainer}
-              underlayColor="rgba(0,122,255,.33)"
-              onPress={this.onOkButtonPress}
-            >
-              <Text style={styles.okButton}>OK</Text>
-            </TouchableHighlight>
-          </View>
-          <Picker
-            selectedValue={this.state.dataItem}
-            onValueChange={this.onValueChangeIos}
-          >
-            {dataItems.map(item => <Picker.Item key={item.value} value={item.value} label={item.label} />)}
-          </Picker>
-        </Animated.View>
-      </Modal>
-    )
-  }
   
   render() {
     return (
       <SafeAreaView style={styles.screen}>
-        {Platform.OS === 'ios' && this.renderIosPicker()}
+        {Platform.OS === 'ios' && (
+          <PickerModal
+            modalVisible={this.state.modalVisible}
+            items={dataItems}
+            onConfirm={this.onPickerConfirm}
+            onDismiss={this.onPickerDismiss}
+            onValueChange={this.onValueChange}
+            selectedValue={this.state.dataItem}
+          />
+        )}
         <View style={styles.container}>
           <Text style={styles.paragraph}>If you experience any data not matching the actual values in your car you can report it here, so we can work on correcting this</Text>
           <Text style={styles.label}>Data</Text>
@@ -213,31 +159,6 @@ const styles = StyleSheet.create({
       height: 2
     },
   },
-  pickerIos: {
-    backgroundColor: '#FFF',
-    borderRadius: 0,
-    paddingTop: 16,
-    paddingBottom: 24,
-  },
-  buttonRow: {
-    paddingHorizontal: 8,
-    flexDirection: 'row',
-    justifyContent: 'space-between'
-  },
-  okButton: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#007aff'
-  },
-  cancelButton: {
-    fontSize: 15,
-    color: '#e9103b'
-  },
-  buttonContainer: {
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 4
-  }
 })
 
 export default ReportBadData
