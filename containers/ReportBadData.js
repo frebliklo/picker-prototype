@@ -30,7 +30,8 @@ class ReportBadData extends React.Component {
 
   state = {
     modalVisible: false,
-    backdropOpacity: new Animated.Value(0),
+    iosPickerY: new Animated.Value(0),
+    pickerTouched: false,
     pickerText: 'Choose data type',
     dataItem: 'fuel',
     actualValue: '',
@@ -49,26 +50,53 @@ class ReportBadData extends React.Component {
   }
 
   onOkButtonPress = () => {
-    this.state.backdropOpacity.setValue(0)
-    
-    this.setState({ 
-      modalVisible: false
+    const pickedElement = dataItems.find(item => item.value === this.state.dataItem)
+    const pickerText = pickedElement.label
+
+    Animated.timing(this.state.iosPickerY, {
+      toValue: 0,
+      duration: 175
+    }).start(() => {
+      this.setState({ 
+        modalVisible: false,
+        pickerTouched: true,
+        pickerText,
+      })
     })
   }
 
   onCancelButtonPress = () => {
-    this.state.backdropOpacity.setValue(0)
-    
-    this.setState({ 
-      pickerText: 'Choose data type',
-      modalVisible: false
+    Animated.timing(this.state.iosPickerY, {
+      toValue: 0,
+      duration: 175
+    }).start(() => {
+      if(!this.state.pickerTouched) {
+        this.setState({ 
+          pickerText: 'Choose data type',
+          modalVisible: false
+        })
+      } else {
+        this.setState({ 
+          modalVisible: false
+        })
+      }
     })
+    
   }
 
   showIosPicker = () => {
-    this.setState({ modalVisible: true })
+    const pickedElement = dataItems.find(item => item.value === this.state.dataItem)
+    const pickerText = pickedElement.label
 
-    Animated.timing(this.state.backdropOpacity, {
+    this.setState({ 
+      modalVisible: true,
+     })
+
+     if(!this.state.pickerTouched) {
+       this.setState({ pickerText })
+     }
+
+    Animated.timing(this.state.iosPickerY, {
       toValue: 1,
       duration: 300
     }).start()
@@ -86,7 +114,7 @@ class ReportBadData extends React.Component {
   )
 
   renderIosPicker = () => {
-    const translateY = this.state.backdropOpacity.interpolate({
+    const translateY = this.state.iosPickerY.interpolate({
       inputRange: [0, 1],
       outputRange: [500, 0]
     })
