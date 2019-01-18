@@ -1,6 +1,7 @@
 import React from 'react'
 import {
   Animated,
+  Easing,
   Modal,
   Picker,
   StyleSheet,
@@ -17,7 +18,8 @@ class PickerModal extends React.Component {
   showModal = () => {
     Animated.timing(this.state.modalAnimation, {
       toValue: 1,
-      duration: 200
+      easing: Easing.out(Easing.quad),
+      duration: 300
     }).start()
   }
 
