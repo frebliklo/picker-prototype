@@ -7,12 +7,19 @@ import {
   StyleSheet,
   Text,
   TouchableHighlight,
+  TouchableWithoutFeedback,
   View
 } from 'react-native'
 
 class PickerModal extends React.Component {
-  state = {
-    modalAnimation: new Animated.Value(0)
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      modalAnimation: new Animated.Value(0),
+      itemValue: this.props.selectedValue,
+      itemPosition: 0
+    }
   }
 
   showModal = () => {
@@ -24,12 +31,18 @@ class PickerModal extends React.Component {
   }
 
   _onOkButtonPress = () => {
+    const { itemValue, itemPosition } = this.state
+
     Animated.timing(this.state.modalAnimation, {
       toValue: 0,
       duration: 175
     }).start(() => {
-      this.props.onConfirm()
+      this.props.onValueChange(itemValue, itemPosition)
     })
+  }
+
+  _onValueChange = (itemValue, itemPosition) => {
+    this.setState({ itemValue, itemPosition })
   }
   
   render() {
@@ -46,7 +59,9 @@ class PickerModal extends React.Component {
         onShow={this.showModal}
       >
         <Animated.View style={[styles.backdrop, { opacity: this.state.modalAnimation }]} />
-        <View style={{ flex: 1 }} />
+        <TouchableWithoutFeedback style={{ flex: 1 }} onPress={this.props.onDismiss}>
+          <View style={{ flex: 1 }} />
+        </TouchableWithoutFeedback>
         <Animated.View style={[styles.container, { transform: [{ translateY }] }]}>
           <View style={styles.buttonRow}>
             <TouchableHighlight
@@ -58,8 +73,8 @@ class PickerModal extends React.Component {
             </TouchableHighlight>
           </View>
           <Picker
-            selectedValue={this.props.selectedValue}
-            onValueChange={this.props.onValueChange}
+            selectedValue={this.state.itemValue}
+            onValueChange={this._onValueChange}
           >
             {this.props.items.map(item => (
               <Picker.Item

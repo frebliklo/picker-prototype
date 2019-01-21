@@ -38,24 +38,21 @@ class ReportBadData extends React.Component {
 
   onValueChange = (itemValue, itemPosition) => {
     this.setState({ 
+      modalVisible: false,
       pickerText: dataItems[itemPosition].label,
       dataItem: itemValue,
-    })
-  }
-
-  onPickerConfirm = () => {
-    const pickedElement = dataItems.find(item => item.value === this.state.dataItem)
-    const pickerText = pickedElement.label
-  
-    this.setState({ 
-      modalVisible: false,
-      pickerText,
     })
   }
 
   showIosPicker = () => {
     this.setState({ 
       modalVisible: true,
+     })
+  }
+
+  closeIosPicker = () => {
+    this.setState({ 
+      modalVisible: false,
      })
   }
 
@@ -77,8 +74,8 @@ class ReportBadData extends React.Component {
           <PickerModal
             modalVisible={this.state.modalVisible}
             items={dataItems}
-            onConfirm={this.onPickerConfirm}
             onValueChange={this.onValueChange}
+            onDismiss={this.closeIosPicker}
             selectedValue={this.state.dataItem}
           />
         )}
