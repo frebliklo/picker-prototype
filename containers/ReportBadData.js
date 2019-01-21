@@ -30,7 +30,6 @@ class ReportBadData extends React.Component {
 
   state = {
     modalVisible: false,
-    pickerTouched: false,
     pickerText: 'Choose data type',
     dataItem: 'fuel',
     actualValue: '',
@@ -50,36 +49,14 @@ class ReportBadData extends React.Component {
   
     this.setState({ 
       modalVisible: false,
-      pickerTouched: true,
       pickerText,
     })
   }
 
-  onPickerDismiss = () => {
-    if(!this.state.pickerTouched) {
-      this.setState({ 
-        pickerText: 'Choose data type',
-        modalVisible: false
-      })
-    } else {
-      this.setState({ 
-        modalVisible: false
-      })
-    }
-    
-  }
-
   showIosPicker = () => {
-    const pickedElement = dataItems.find(item => item.value === this.state.dataItem)
-    const pickerText = pickedElement.label
-
     this.setState({ 
       modalVisible: true,
      })
-
-     if(!this.state.pickerTouched) {
-       this.setState({ pickerText })
-     }
   }
 
   renderAndroidPicker = () => (
