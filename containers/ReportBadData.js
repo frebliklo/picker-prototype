@@ -101,7 +101,6 @@ class ReportBadData extends React.Component {
             modalVisible={this.state.modalVisible}
             items={dataItems}
             onConfirm={this.onPickerConfirm}
-            onDismiss={this.onPickerDismiss}
             onValueChange={this.onValueChange}
             selectedValue={this.state.dataItem}
           />

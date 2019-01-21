@@ -31,15 +31,6 @@ class PickerModal extends React.Component {
       this.props.onConfirm()
     })
   }
-
-  _onCancelButtonPress = () => {
-    Animated.timing(this.state.modalAnimation, {
-      toValue: 0,
-      duration: 175
-    }).start(() => {
-      this.props.onDismiss()
-    })
-  }
   
   render() {
     const translateY = this.state.modalAnimation.interpolate({
@@ -58,13 +49,6 @@ class PickerModal extends React.Component {
         <View style={{ flex: 1 }} />
         <Animated.View style={[styles.container, { transform: [{ translateY }] }]}>
           <View style={styles.buttonRow}>
-            <TouchableHighlight
-              style={styles.buttonContainer}
-              underlayColor="rgba(233,16,59,.33)"
-              onPress={this._onCancelButtonPress}
-            >
-              <Text style={styles.cancelButton}>Cancel</Text>
-            </TouchableHighlight>
             <TouchableHighlight
               style={styles.buttonContainer}
               underlayColor="rgba(0,122,255,.33)"
@@ -93,9 +77,8 @@ class PickerModal extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FFF',
+    backgroundColor: '#F7F7F7',
     borderRadius: 0,
-    paddingTop: 16,
     paddingBottom: 24,
     shadowColor: '#000',
     shadowOpacity: .15,
@@ -110,18 +93,23 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,.35)'
   },
   buttonRow: {
+    paddingVertical: 12,
     paddingHorizontal: 8,
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'flex-end',
+    backgroundColor: '#FFF',
+    shadowColor: '#000',
+    shadowOpacity: .2,
+    shadowRadius: 2,
+    shadowOffset: {
+      width: 0,
+      height: 1
+    },
   },
   okButton: {
     fontSize: 15,
     fontWeight: '600',
     color: '#007aff'
-  },
-  cancelButton: {
-    fontSize: 15,
-    color: '#e9103b'
   },
   buttonContainer: {
     paddingVertical: 4,
